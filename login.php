@@ -11,7 +11,7 @@ define('NONCE_LIFE', 180); // How long a nonce is valid for
 define('NONCE_CHANGE', 10); // How often to change the nonce.
 define('NONCE_LENGTH', 4);
 
-function getServerNonce($timestamp = false, $length = NONCE_LENGTH){
+function getServerNonce($timestamp = false, $length = NONCE_LENGTH) {
 	if($timestamp === false) $timestamp = time();
 
         //Round off to the last multiple of 10 seconds
@@ -20,22 +20,25 @@ function getServerNonce($timestamp = false, $length = NONCE_LENGTH){
 	return substr(hash('sha256', $seed), 0, $length);
 }
 
-// Defaults to 3 minutes, 10 seconds each.
-function getValidServerNonces($specific = false){
+function getValidServerNonces($specific = false) {
 	$tmp = array();
 	$timestamp = time();
-	$timestamp = $timestamp - ($timestamp % NONCE_CHANGE);
 
-	for($i = 0; $i < (int) (NONCE_LIFE); $i+=NONCE_CHANGE){
+	// count backwards and check each interval
+	for($i = 0; $i < (int) (NONCE_LIFE); $i+=NONCE_CHANGE) {
 		$tmp[$timestamp] = getServerNonce($timestamp);
-		if($specific !== false && $specific == $tmp[$timestamp]){
+		if( $specific !== false && strcmp($specific,$tmp[$timestamp]) ) {
 			return true;
 			break;
 		}
 		$timestamp -= NONCE_CHANGE;
-
 	}
 	unset($timestamp);
+
+	// return false if asked to valid a specific server nonce
+	if ($specific !== false)
+		return false;
+
 	return $tmp;
 }
 
