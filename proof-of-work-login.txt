@@ -26,5 +26,5 @@ serverside check:
 
 cron job (run every X hours)
  - if rows >= 10 then delete oldest nonce from validnonces table
- - generate new nonce (random 5 [0-9a-f])
+ - generate new nonce (random 5 [0-9])
  - insert nonce into validnonces table
