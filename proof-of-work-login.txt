@@ -1,0 +1,30 @@
+html:
+- where nonce is newest nonce from validnonces table
+
+<input type=text size=30 name=name>
+<input type=text size=30 name=pasword>
+<input type=hidden name=cnonce>
+<input type=hidden name=nonce value=nonce>
+
+javascript:
+onsubmit:
+  define cnonce = 0
+  do
+     hashstring = sha256(name . password . cnonce)
+     cnonce++
+  while hashstring doesn't start with form.nonce
+  populate form.cnonce = cnonce
+
+serverside check:
+- read/filter on name,password,cnonce,nonce
+- check nonce in validnonces db table, or reject
+- check hash.
+    calculatedhash = sha256(name . password . cnonce)
+    if calculatedhash doesn't start with nonce reject
+- check password hash against hash for username.
+    if matches, login
+
+cron job (run every X hours)
+ - if rows >= 10 then delete oldest nonce from validnonces table
+ - generate new nonce (random 5 [0-9a-f])
+ - insert nonce into validnonces table
