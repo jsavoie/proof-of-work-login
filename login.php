@@ -25,20 +25,17 @@ function getValidServerNonces($specific = false) {
 	$timestamp = time();
 
 	// count backwards and check each interval
-	for($i = 0; $i < (int) (NONCE_LIFE); $i+=NONCE_CHANGE) {
+	for($i = 0; $i < NONCE_LIFE; $i += NONCE_CHANGE) {
 		$tmp[$timestamp] = getServerNonce($timestamp);
-		if( $specific !== false && strcmp($specific,$tmp[$timestamp]) ) {
+		if( $specific !== false && hash_equals($tmp[$timestamp],$specific) )
 			return true;
-			break;
-		}
 		$timestamp -= NONCE_CHANGE;
 	}
 	unset($timestamp);
 
-	// return false if asked to valid a specific server nonce
+	// return false if asked to validate a specific server nonce
 	if ($specific !== false)
 		return false;
-
 	return $tmp;
 }
 
