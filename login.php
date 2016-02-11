@@ -6,9 +6,9 @@
 
 <?php
 
-define('SERVER_SECRET', 'f8b5ad747742a8987b10'); // A static salt for the server nonce.  
+define('SERVER_SECRET', 'f8b5ad747742a8987b10'); // A static salt for the server nonce.
 define('NONCE_LIFE', 180); // How long a nonce is valid for
-define('NONCE_CHANGE', 10); // How often to change the nonce. 
+define('NONCE_CHANGE', 10); // How often to change the nonce.
 define('NONCE_LENGTH', 4);
 
 function getServerNonce($timestamp = false, $length = NONCE_LENGTH){
@@ -92,7 +92,7 @@ if ( isset($_POST['username']) && isset($_POST['password']) && isset($_POST['cno
 function find_cnonce(username, password, nonce)
 {
   var client_nonce = 0;
-  var hash = '';
+  var hash = Sha256.hash(username + password + client_nonce);
   while(! hash.startsWith(nonce)){
     client_nonce++;
     hash = Sha256.hash(username + password + client_nonce);
@@ -102,7 +102,8 @@ function find_cnonce(username, password, nonce)
   document.getElementById("submit").style.display = '';
 }
 
-function update_nonce(){
+function update_nonce()
+{
   document.getElementById("username").disabled = true;
   document.getElementById("password").disabled = true;
   document.getElementById("prepare").disabled = true;
