@@ -78,12 +78,12 @@ if ( isset($_POST['username']) && isset($_POST['password']) && isset($_POST['cno
 <form name="login" method=POST>
 <fieldset>
   <legend>Login to the darkweb</legend>
-  <label for="username">Username</label><input type="text" name="username" id="username"><br />
-  <label for="password">Password</label><input type="password" name="password" id="password"><br />
+  <label for="username">Username</label><input type="text" name="username" id="username" onclick="reset_submit()"><br />
+  <label for="password">Password</label><input type="password" name="password" id="password" onclick="reset_submit()"><br /><br />
   <input type=hidden id="cnonce" name="cnonce">
   <input type=hidden id="nonce" name="nonce" value="<?php echo getServerNonce() ?>">
   <input type="button" name="prepare" value = "Prepare" id="prepare" onclick="update_nonce()">
-  <input type="submit" name="submit" id="submit" style="display:none">
+  <input type="submit" name="submit" id="submit" style="display:none" disabled>
 </fieldset>
 </form>
 
@@ -93,24 +93,31 @@ function find_cnonce(username, password, nonce)
 {
   var client_nonce = 0;
   var hash = Sha256.hash(username + password + client_nonce);
-  while(! hash.startsWith(nonce)){
+  while(! hash.startsWith(nonce)) {
     client_nonce++;
     hash = Sha256.hash(username + password + client_nonce);
   }
-  document.getElementById('cnonce').value = client_nonce;
+  document.getElementById("cnonce").value = client_nonce;
   document.getElementById("prepare").style.display = 'none';
   document.getElementById("submit").style.display = '';
+  document.getElementById("submit").disabled = false;
 }
 
 function update_nonce()
 {
-  document.getElementById("username").disabled = true;
-  document.getElementById("password").disabled = true;
   document.getElementById("prepare").disabled = true;
-    find_cnonce(document.getElementById('username').value,
-                document.getElementById('password').value,
-                document.getElementById('nonce').value);
-    return false;
+  find_cnonce(document.getElementById('username').value,
+              document.getElementById('password').value,
+              document.getElementById('nonce').value);
+  return false;
+}
+
+function reset_submit()
+{
+  document.getElementById("prepare").disabled = false;
+  document.getElementById("prepare").style.display = '';
+  document.getElementById("submit").disabled = true;
+  document.getElementById("submit").style.display = 'none';
 }
 
 </script>
